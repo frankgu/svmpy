@@ -21,7 +21,6 @@ class SVMTrainer(object):
     def _gram_matrix(self, X):
         n_samples, n_features = X.shape
         K = np.zeros((n_samples, n_samples))
-        # TODO(tulloch) - vectorize
         for i, x_i in enumerate(X):
             for j, x_j in enumerate(X):
                 K[i, j] = self._kernel(x_i, x_j)
@@ -35,7 +34,6 @@ class SVMTrainer(object):
         support_vectors = X[support_vector_indices]
         support_vector_labels = y[support_vector_indices]
 
-        # http://www.cs.cmu.edu/~guestrin/Class/10701-S07/Slides/kernels.pdf
         # bias = y_k - \sum z_i y_i  K(x_k, x_i)
         # Thus we can just predict an example with bias of zero, and
         # compute error.
@@ -69,7 +67,6 @@ class SVMTrainer(object):
         q = cvxopt.matrix(-1 * np.ones(n_samples))
 
         # -a_i \leq 0
-        # TODO(tulloch) - modify G, h so that we have a soft-margin classifier
         G_std = cvxopt.matrix(np.diag(np.ones(n_samples) * -1))
         h_std = cvxopt.matrix(np.zeros(n_samples))
 
