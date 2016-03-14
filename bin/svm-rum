@@ -9,7 +9,26 @@ import itertools
 import argh
 
 
-def example(num_samples=100, num_features=2, grid_size=200, filename="svm.pdf"):
+def file_example(file_path="data.txt"):
+    # read the X and y value from the file
+    X = np.genfromtxt(file_path, usecols=(range(3)))
+    y = np.genfromtxt(file_path, usecols=(3, )).reshape((-1, 1))
+    # replace all the y value to -1 if it equals to 2
+    y[y == 2.] = -1.
+    # convert ndarray to matrix
+    samples = np.matrix(X)
+    labels = np.matrix(y)
+    # initialize the training model
+    trainer = svmpy.SVMTrainer(svmpy.Kernel.gaussian(0.3), 100)
+    # train the model and store the model to the predictor
+    predictor = trainer.train(samples, labels)
+    # predict the test data
+    #predictor.predict()
+
+    #plot(predictor, samples, labels, 30, "svm.pdf")
+
+
+def random_example(num_samples=100, num_features=2, grid_size=200, filename="svm.pdf"):
     samples = np.matrix(np.random.normal(size=num_samples * num_features)
                         .reshape(num_samples, num_features))
     labels = 2 * (samples.sum(axis=1) > 0) - 1.0
@@ -48,4 +67,4 @@ def plot(predictor, X, y, grid_size, filename):
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.ERROR)
-    argh.dispatch_command(example)
+    argh.dispatch_command(file_example)
