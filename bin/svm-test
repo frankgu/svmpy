@@ -1,0 +1,33 @@
+#!/usr/bin/env python
+
+import svmpy
+import logging
+import numpy as np
+import argh
+
+
+def test_example(file_path="test.txt"):
+    # read the X and y value from the file
+    X = np.genfromtxt(file_path, usecols=(range(3)))
+    y = np.genfromtxt(file_path, usecols=(3,)).reshape((-1, 1))
+    # replace all the y value to -1 if it equals to 2
+    y[y == 2.] = -1.
+    # convert array to matrix
+    samples = np.matrix(X)
+    labels = np.matrix(y)
+
+    # load the model from the model path and construct the predictor
+    predictor = svmpy.SVMPredictor.load_model()
+    n_samples = samples.shape[0]
+    error_count = 0
+    for i in range(n_samples):
+        result = predictor.predict(samples[i])
+        if result != labels.item(i):
+            error_count += 1
+    # get one data from the
+    print("the error rate is : ", error_count / n_samples)
+
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.ERROR)
+    argh.dispatch_command(test_example)

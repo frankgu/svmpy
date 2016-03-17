@@ -9,10 +9,10 @@ import itertools
 import argh
 
 
-def file_example(file_path="data.txt"):
+def train_example(file_path="train.txt"):
     # read the X and y value from the file
     X = np.genfromtxt(file_path, usecols=(range(3)))
-    y = np.genfromtxt(file_path, usecols=(3, )).reshape((-1, 1))
+    y = np.genfromtxt(file_path, usecols=(3,)).reshape((-1, 1))
     # replace all the y value to -1 if it equals to 2
     y[y == 2.] = -1.
     # convert ndarray to matrix
@@ -21,11 +21,17 @@ def file_example(file_path="data.txt"):
     # initialize the training model
     trainer = svmpy.SVMTrainer(svmpy.Kernel.gaussian(0.3), 100)
     # train the model and store the model to the predictor
-    predictor = trainer.train(samples, labels)
-    # predict the test data
-    #predictor.predict()
+    model = trainer.train(samples, labels)
+    # write the model to the txt file
+    svmpy.SVMTrainer.write_model(model)
+    # plot(predictor, samples, labels, 30, "svm.pdf")
 
-    #plot(predictor, samples, labels, 30, "svm.pdf")
+
+def test_example(model_path="model.txt", file_path="test.txt"):
+    # first read the model from the model path
+    # get one data from the
+    # print("the result is : ", predictor.predict(X[1]))
+    print(model_path)
 
 
 def random_example(num_samples=100, num_features=2, grid_size=200, filename="svm.pdf"):
@@ -44,7 +50,7 @@ def plot(predictor, X, y, grid_size, filename):
     xx, yy = np.meshgrid(np.linspace(x_min, x_max, grid_size),
                          np.linspace(y_min, y_max, grid_size),
                          indexing='ij')
-    flatten = lambda m: np.array(m).reshape(-1,)
+    flatten = lambda m: np.array(m).reshape(-1, )
 
     result = []
     for (i, j) in itertools.product(range(grid_size), range(grid_size)):
@@ -67,4 +73,4 @@ def plot(predictor, X, y, grid_size, filename):
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.ERROR)
-    argh.dispatch_command(file_example)
+    argh.dispatch_command(train_example)

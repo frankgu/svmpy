@@ -1,24 +1,36 @@
+import svmpy
 import numpy as np
 import cvxopt.solvers
 import logging
-
+import json
 
 MIN_SUPPORT_VECTOR_MULTIPLIER = 1e-5
 
 
 class SVMTrainer(object):
-    def __init__(self, kernel, c):
+    def __init__(self,
+                 kernel,
+                 c):
         self._kernel = kernel
         self._c = c
 
-    def train(self, X, y):
-        """Given the training features X with labels y, returns a SVM
+    # write the model to a txt file
+    @staticmethod
+    def write_model(model, model_path="model.txt"):
+        json.dump(model, open(model_path, "w"))
+
+    def train(self,
+              X,
+              y):
+        """
+        Given the training features X with labels y, returns a SVM
         predictor representing the trained SVM.
         """
         lagrange_multipliers = self._compute_multipliers(X, y)
-        return self._construct_predictor(X, y, lagrange_multipliers)
+        return self._construct_model(X, y, lagrange_multipliers)
 
-    def _gram_matrix(self, X):
+    def _gram_matrix(self,
+                     X):
         n_samples, n_features = X.shape
         K = np.zeros((n_samples, n_samples))
         for i, x_i in enumerate(X):
@@ -26,7 +38,10 @@ class SVMTrainer(object):
                 K[i, j] = self._kernel(x_i, x_j)
         return K
 
-    def _construct_predictor(self, X, y, lagrange_multipliers):
+    def _construct_model(self,
+                         X,
+                         y,
+                         lagrange_multipliers):
         support_vector_indices = \
             lagrange_multipliers > MIN_SUPPORT_VECTOR_MULTIPLIER
 
@@ -46,14 +61,15 @@ class SVMTrainer(object):
                 support_vector_labels=support_vector_labels).predict(x_k)
              for (y_k, x_k) in zip(support_vector_labels, support_vectors)])
 
-        return SVMPredictor(
-            kernel=self._kernel,
-            bias=bias,
-            weights=support_multipliers,
-            support_vectors=support_vectors,
-            support_vector_labels=support_vector_labels)
+        model = {"kernel": svmpy.Kernel.type, "sigma": svmpy.Kernel.sigma,
+                 "bias": bias, "weights": support_multipliers.tolist(),
+                 "support_vectors": support_vectors.tolist(),
+                 "support_vector_labels": support_vector_labels.tolist()}
+        return model
 
-    def _compute_multipliers(self, X, y):
+    def _compute_multipliers(self,
+                             X,
+                             y):
         n_samples, n_features = X.shape
 
         K = self._gram_matrix(X)
@@ -104,6 +120,25 @@ class SVMPredictor(object):
         logging.info("Weights: %s", self._weights)
         logging.info("Support vectors: %s", self._support_vectors)
         logging.info("Support vector labels: %s", self._support_vector_labels)
+
+    @staticmethod
+    def load_model(model_path="model.txt"):
+        # load the model from the json file
+        model = json.load(open(model_path))
+        print(model)
+        # set the initialize model to be linear model
+        kernel = svmpy.Kernel.linear()
+        if model["kernel"] == "gaussian":
+            kernel = svmpy.Kernel.gaussian(model["sigma"])
+        weights = np.array(model["weights"])
+        support_vectors = np.matrix(model["support_vectors"])
+        support_vector_labels = np.matrix(model["support_vector_labels"])
+        # construct the predictor
+        return SVMPredictor(kernel,
+                            model["bias"],
+                            weights,
+                            support_vectors,
+                            support_vector_labels)
 
     def predict(self, x):
         """
