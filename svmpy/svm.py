@@ -125,7 +125,6 @@ class SVMPredictor(object):
     def load_model(model_path="model.txt"):
         # load the model from the json file
         model = json.load(open(model_path))
-        print(model)
         # set the initialize model to be linear model
         kernel = svmpy.Kernel.linear()
         if model["kernel"] == "gaussian":
