@@ -17,6 +17,7 @@ Python using `numpy` and `cvxopt`.
 --------------
 
 Training:
+
 1. Go to the `bin/svm-train`, train the dataset first by passing the
 dimension of the X features and the directory of the dataset
 
@@ -24,7 +25,8 @@ dimension of the X features and the directory of the dataset
 in the testing part
 
 Testing:
-1.  Go to the `bin/svm-test`, test the dataset first by passing the
+
+1. Go to the `bin/svm-test`, test the dataset first by passing the
 dimension of the X features and the directory of the dataset, it will
 automatically search for the `model.txt` file.
 
