@@ -1,8 +1,8 @@
 =======
- SVMPy
+ SVM-Python
 =======
 
-By Andrew Tulloch (http://tullo.ch)
+By Dongfeng Gu (https://www.gdf.name)
 
 --------------
  Introduction
@@ -11,44 +11,21 @@ By Andrew Tulloch (http://tullo.ch)
 This is a basic implementation of a soft-margin kernel SVM solver in
 Python using `numpy` and `cvxopt`.
 
-See http://tullo.ch/articles/svm-py/ for a description of the
-algorithm used and the general theory behind SVMs.
 
 --------------
- Demonstration
+ Usage
 --------------
 
-Run `bin/svm-py-demo --help`.  
+Training:
+1. Go to the `bin/svm-train`, train the dataset first by passing the
+dimension of the X features and the directory of the dataset
 
-::
-   
-  ∴ bin/svm-py-demo --help
-  usage: svm-py-demo [-h] [--num-samples NUM_SAMPLES]
-                     [--num-features NUM_FEATURES] [-g GRID_SIZE] [-f
-                     FILENAME]
-  
-  optional arguments:
-    -h, --help            show this help message and exit
-    --num-samples NUM_SAMPLES
-    --num-features NUM_FEATURES
-    -g GRID_SIZE, --grid-size GRID_SIZE
-    -f FILENAME, --filename FILENAME
-  
+2. run the program and it will generate a `model.txt` which will be used
+in the testing part
 
-For example,
+Testing:
+1.  Go to the `bin/svm-test`, test the dataset first by passing the
+dimension of the X features and the directory of the dataset, it will
+automatically search for the `model.txt` file.
 
-::
-
-  bin/svm-py-demo --num-samples=100 --num-features=2 --grid-size=500 --filename=svm500.pdf
-
-yields the image
-
-.. image:: http://i.imgur.com/yy0oUVk.png
-
-
-
-
-.. image:: https://d2weczhvl823v0.cloudfront.net/ajtulloch/svmpy/trend.png
-   :alt: Bitdeli badge
-   :target: https://bitdeli.com/free
-
+2. run the program and it will generate the error rate

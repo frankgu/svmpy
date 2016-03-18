@@ -6,10 +6,10 @@ import numpy as np
 import argh
 
 
-def train_example(file_path="data_txt/classify_d3_k2_saved3_train.txt"):
+def train_example(dimension=3, file_path="data_txt/classify_d3_k2_saved3_train.txt"):
     # read the X and y value from the file
-    X = np.genfromtxt(file_path, usecols=(range(3)))
-    y = np.genfromtxt(file_path, usecols=(3,)).reshape((-1, 1))
+    X = np.genfromtxt(file_path, usecols=(range(dimension)))
+    y = np.genfromtxt(file_path, usecols=(dimension,)).reshape((-1, 1))
     # replace all the y value to -1 if it equals to 2
     y[y == 2.] = -1.
     # convert array to matrix
