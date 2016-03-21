@@ -49,20 +49,8 @@ class SVMTrainer(object):
         support_vectors = X[support_vector_indices]
         support_vector_labels = y[support_vector_indices]
 
-        # bias = y_k - \sum z_i y_i  K(x_k, x_i)
-        # Thus we can just predict an example with bias of zero, and
-        # compute error.
-        bias = np.mean(
-            [y_k - SVMPredictor(
-                kernel=self._kernel,
-                bias=0.0,
-                weights=support_multipliers,
-                support_vectors=support_vectors,
-                support_vector_labels=support_vector_labels).predict(x_k)
-             for (y_k, x_k) in zip(support_vector_labels, support_vectors)])
-
         model = {"kernel": svmpy.Kernel.type, "sigma": svmpy.Kernel.sigma,
-                 "bias": bias, "weights": support_multipliers.tolist(),
+                 "weights": support_multipliers.tolist(),
                  "support_vectors": support_vectors.tolist(),
                  "support_vector_labels": support_vector_labels.tolist()}
         return model
@@ -73,11 +61,6 @@ class SVMTrainer(object):
         n_samples, n_features = X.shape
 
         K = self._gram_matrix(X)
-        # Solves
-        # min 1/2 x^T P x + q^T x
-        # s.t.
-        #  Gx \coneleq h
-        #  Ax = b
 
         P = cvxopt.matrix(np.outer(y, y) * K)
         q = cvxopt.matrix(-1 * np.ones(n_samples))
@@ -105,18 +88,15 @@ class SVMTrainer(object):
 class SVMPredictor(object):
     def __init__(self,
                  kernel,
-                 bias,
                  weights,
                  support_vectors,
                  support_vector_labels):
         self._kernel = kernel
-        self._bias = bias
         self._weights = weights
         self._support_vectors = support_vectors
         self._support_vector_labels = support_vector_labels
         assert len(support_vectors) == len(support_vector_labels)
         assert len(weights) == len(support_vector_labels)
-        logging.info("Bias: %s", self._bias)
         logging.info("Weights: %s", self._weights)
         logging.info("Support vectors: %s", self._support_vectors)
         logging.info("Support vector labels: %s", self._support_vector_labels)
@@ -134,7 +114,6 @@ class SVMPredictor(object):
         support_vector_labels = np.matrix(model["support_vector_labels"])
         # construct the predictor
         return SVMPredictor(kernel,
-                            model["bias"],
                             weights,
                             support_vectors,
                             support_vector_labels)
@@ -143,7 +122,7 @@ class SVMPredictor(object):
         """
         Computes the SVM prediction on the given features x.
         """
-        result = self._bias
+        result = 0
         for z_i, x_i, y_i in zip(self._weights,
                                  self._support_vectors,
                                  self._support_vector_labels):

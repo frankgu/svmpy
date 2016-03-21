@@ -6,7 +6,7 @@ import numpy as np
 import argh
 
 
-def test_example(dimension=3, file_path="data_txt/classify_d3_k2_saved3_test.txt"):
+def test_example(dimension=99, file_path="data_txt/classify_d99_k60_saved2_test.txt"):
     # read the X and y value from the file
     X = np.genfromtxt(file_path, usecols=(range(dimension)))
     y = np.genfromtxt(file_path, usecols=(dimension,)).reshape((-1, 1))

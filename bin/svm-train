@@ -6,7 +6,7 @@ import numpy as np
 import argh
 
 
-def train_example(dimension=3, file_path="data_txt/classify_d3_k2_saved3_train.txt"):
+def train_example(dimension=99, file_path="data_txt/classify_d99_k60_saved2_train.txt"):
     # read the X and y value from the file
     X = np.genfromtxt(file_path, usecols=(range(dimension)))
     y = np.genfromtxt(file_path, usecols=(dimension,)).reshape((-1, 1))
@@ -17,7 +17,7 @@ def train_example(dimension=3, file_path="data_txt/classify_d3_k2_saved3_train.t
     labels = np.matrix(y)
 
     # initialize the training model
-    trainer = svmpy.SVMTrainer(svmpy.Kernel.gaussian(0.3), 100)
+    trainer = svmpy.SVMTrainer(svmpy.Kernel.gaussian(0.1), 100)
     # train the model and store the model to the predictor
     model = trainer.train(samples, labels)
     # write the model to the txt file
